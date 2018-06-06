@@ -28,8 +28,9 @@ Obj/
 
 # Visual Studio 2015 cache/options directory
 .vs/
-/wwwroot/dist/
-/ClientApp/dist/
+/NPV/wwwroot/dist/
+/NPV/ClientApp/dist/
+/NPV/node_modules/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
