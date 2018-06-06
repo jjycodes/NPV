@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NPV", "NPV\NPV.csproj", "{1
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BusinessLogic", "BusinessLogic\BusinessLogic.csproj", "{BA406A33-5E46-478B-83EC-C72FE47B92CC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{AFC21100-7433-4C2F-9086-17257751C011}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{BA406A33-5E46-478B-83EC-C72FE47B92CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BA406A33-5E46-478B-83EC-C72FE47B92CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BA406A33-5E46-478B-83EC-C72FE47B92CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFC21100-7433-4C2F-9086-17257751C011}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFC21100-7433-4C2F-9086-17257751C011}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFC21100-7433-4C2F-9086-17257751C011}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFC21100-7433-4C2F-9086-17257751C011}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
