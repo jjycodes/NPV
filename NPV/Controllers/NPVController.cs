@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
+using BusinessLogic.Models;
+using BusinessLogic.Services;
 using Microsoft.AspNetCore.Mvc;
-using NPV.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -13,6 +13,12 @@ namespace NPV.Controllers
     [Route("api/[controller]")]
     public class NPVController : Controller
     {
+        private readonly INPVCalculationService _npvCalculationService;
+        public NPVController(INPVCalculationService npvCalculationService)
+        {
+            _npvCalculationService = npvCalculationService;
+        }
+
         // GET: api/<controller>
         [HttpGet]
         public IEnumerable<string> Get()
@@ -29,12 +35,12 @@ namespace NPV.Controllers
 
         // POST api/<controller>
         [HttpPost("{data}")]
-        public async Task<IEnumerable<RateNPV>> ComputeValue([FromBody] NPVParameters data)
+        public async Task<IEnumerable<RateNPVDTO>> ComputeValue([FromBody] NPVParametersDTO data)
         {
             return await ComputeValueAsync(data);
         }
 
-        private async Task<IEnumerable<RateNPV>> ComputeValueAsync(NPVParameters data)
+        private async Task<IEnumerable<RateNPVDTO>> ComputeValueAsync(NPVParametersDTO data)
         {
             var tasks = new List<Task<KeyValuePair<double, double>>>();
 
@@ -49,10 +55,10 @@ namespace NPV.Controllers
             }
 
             var continuation = await Task.WhenAll(tasks);
-            var npvRates = new List<RateNPV>();
+            var npvRates = new List<RateNPVDTO>();
             npvRates.AddRange(
                 continuation.Select(x =>
-                new RateNPV()
+                new RateNPVDTO()
                 {
                     Rate = Math.Round(x.Key * 100, 2),
                     NPV = Math.Round(x.Value, 2)
@@ -64,29 +70,7 @@ namespace NPV.Controllers
 
         private KeyValuePair<double, double> ComputeNPV(IEnumerable<double> cashflows, double rate)
         {
-            var firstCashFlow = cashflows.First(); //this will be deducted after all the summation
-            var revenues = cashflows.ToList();
-            revenues.RemoveAt(0);
-
-            double periodSums = 0;
-
-            //check if varying cashflows
-            var firstRevenue = revenues.First();
-            if (revenues.All(c => c == firstRevenue))
-            {
-                periodSums = ComputeEqualPeriodValue(firstRevenue, rate, revenues.Count());
-            }
-            else
-            {
-                for (int i = 0; i < revenues.Count(); i++)
-                {
-                    periodSums += ComputeVaryingPeriodValue(revenues[i], rate, i + 1);
-                }
-            }
-
-            periodSums -= firstCashFlow;
-
-            return new KeyValuePair<double, double>(rate, periodSums);
+            return new KeyValuePair<double, double>(rate, _npvCalculationService.ComputeNPV(cashflows, rate));
         }
 
         private double ComputeVaryingPeriodValue(double cashFlow, double rate, int periodNo)
