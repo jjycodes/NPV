@@ -48,6 +48,10 @@ export class NPVComponent {
         }
     }
 
+    public removeCashFlow(p: Project, index: number) {
+        p.cashFlows.splice(index, 1);
+    }
+
     public computeNPV(p: Project) {
         //validate
         if (this.parameters.upperBoundDiscountRate >= this.parameters.lowerBoundDiscountRate

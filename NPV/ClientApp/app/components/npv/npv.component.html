@@ -37,9 +37,9 @@
 
 <div *ngFor="let project of projects" class="col-md-6">
     <p>Project {{project.name}}</p>
-    <ul *ngFor="let cashFlow of project.cashFlows">
-        <li>{{cashFlow}}</li>
-    </ul>
+    <div *ngFor="let cashFlow of project.cashFlows; let i = index">
+        <span>$ {{cashFlow}}</span><a (click)="removeCashFlow(project, i)"> <i class="glyphicon glyphicon-remove"></i></a>
+    </div>
     <input type="number" step="1" [(ngModel)]="project.newCashFlow" />
     <button (click)="addCashFlow(project)">Add Cash Flow</button>
     <button (click)="computeNPV(project)">Compute</button>
