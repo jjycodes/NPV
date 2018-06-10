@@ -9,6 +9,8 @@ import { NavMenuComponent } from './components/navmenu/navmenu.component';
 import { HomeComponent } from './components/home/home.component';
 import { NPVComponent } from './components/npv/npv.component';
 
+import { ChartsModule } from 'ng2-charts';
+
 @NgModule({
     declarations: [
         AppComponent,
@@ -20,11 +22,11 @@ import { NPVComponent } from './components/npv/npv.component';
         CommonModule,
         HttpModule,
         FormsModule,
+        ChartsModule,
         RouterModule.forRoot([
-            { path: '', redirectTo: 'home', pathMatch: 'full' },
-            { path: 'home', component: HomeComponent },
+            { path: '', redirectTo: 'NPVComponent', pathMatch: 'full' },
             { path: 'npv', component: NPVComponent },
-            { path: '**', redirectTo: 'home' }
+            { path: '**', redirectTo: 'npv' }
         ])
     ]
 })
