@@ -5,7 +5,6 @@ import { HttpModule } from '@angular/http';
 import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './components/app/app.component';
-import { NavMenuComponent } from './components/navmenu/navmenu.component';
 import { HomeComponent } from './components/home/home.component';
 import { NPVComponent } from './components/npv/npv.component';
 
@@ -14,7 +13,6 @@ import { ChartsModule } from 'ng2-charts';
 @NgModule({
     declarations: [
         AppComponent,
-        NavMenuComponent,
         NPVComponent,
         HomeComponent
     ],
