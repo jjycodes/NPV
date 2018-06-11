@@ -11,7 +11,7 @@
 
 <div class="col-md-4">
 
-    <label>NPV Options :</label>
+    <h4>NPV Options :</h4>
     <table class='table'>
         <tr>
             <td>Upper Bound Discount Rate: </td>
@@ -33,33 +33,46 @@
         </tr>
     </table>
 </div>
+<div class="col-md-8"></div>
 <hr class="col-md-12" />
 
-<div *ngFor="let project of projects" class="col-md-6">
-    <p>Project {{project.name}}</p>
+<div *ngFor="let project of projects" [ngClass]="{
+     'col-md-3': projects.length == 4,
+     'col-md-4': projects.length == 3,
+     'col-md-6': projects.length == 2,
+     'col-md-12': projects.length == 1
+     }">
+    <h4>Project {{project.name}}</h4>
     <div *ngFor="let cashFlow of project.cashFlows; let i = index">
         <span>$ {{cashFlow}}</span><a (click)="removeCashFlow(project, i)"> <i class="glyphicon glyphicon-remove"></i></a>
     </div>
     <input type="number" step="1" [(ngModel)]="project.newCashFlow" />
-    <button (click)="addCashFlow(project)">Add Cash Flow</button>
+    <button (click)="addCashFlow(project)">
+        <span *ngIf="project.cashFlows.length > 0">Add Cash Flow</span>
+        <span *ngIf="project.cashFlows.length == 0">Add Initial Investment</span>
+    </button>
     <button (click)="computeNPV(project)">Compute</button>
     <hr *ngIf="project.ratesnpv.length > 0" />
-    <table class="col-md-6 table-striped table-responsive table-bordered" *ngIf="project.ratesnpv.length > 0">
+    <table class="col-md-6 table-striped table-responsive table-bordered"
+           *ngIf="project.ratesnpv.length > 0">
         <thead>
-        <tr>
-            <th class="col-sm-3">Rate</th>
-            <th class="col-sm-3">Net Present Value</th>
-        </tr>
+            <tr>
+                <th class="col-sm-3">Rate</th>
+                <th class="col-sm-3">Net Present Value</th>
+            </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let r of project.ratesnpv">
-            <td class="">{{r.rate}}</td>
-            <td>{{r.npv}}</td>
-        </tr>
+            <tr *ngFor="let r of project.ratesnpv">
+                <td class="">{{r.rate}}</td>
+                <td>{{r.npv}}</td>
+            </tr>
         </tbody>
     </table>
 </div>
-<div>
+
+<hr class="col-md-12" />
+<div *ngIf="barChartData" class="col-md-12">
+    <h4 *ngIf="barChartData">Visualization</h4>
     <div style="display: block">
         <canvas baseChart
                 [datasets]="barChartData"
