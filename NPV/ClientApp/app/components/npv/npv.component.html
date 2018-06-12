@@ -1,6 +1,6 @@
 ﻿<h1>Net Present Value Calculator</h1>
 
-<p>This component calculates the Net Present Value for a given series of Cash Flows</p>
+<p class="has-error">This component calculates the Net Present Value for a given series of Cash Flows</p>
 <p>
     Source :
     <a href="https://www.investopedia.com/ask/answers/032615/what-formula-calculating-net-present-value-npv.asp">Investopedia</a>
@@ -9,14 +9,16 @@
 
 <br />
 
-<div class="col-md-4">
+<div class="col-md-4 form-group">
 
     <h4>NPV Options :</h4>
     <table class='table'>
         <tr>
             <td>Upper Bound Discount Rate: </td>
             <td>
-                <input type="number" min="0" max="100" step="1" [(ngModel)]="parameters.upperBoundDiscountRate" /> %
+                <span>
+                    <input type="number" min="0" max="100" step="1" [(ngModel)]="parameters.upperBoundDiscountRate" /> %
+                </span>
             </td>
         </tr>
         <tr>
@@ -32,17 +34,47 @@
             </td>
         </tr>
     </table>
+    <div>
+        <span class="help-block alert alert-danger" *ngIf="!isValidUpperBoundRate">
+            Please enter a valid upperbound rate
+        </span>
+    </div>
+    <div>
+        <span class="help-block alert alert-danger" *ngIf="!isValidLowerBoundRate">
+            Please enter a valid lowerbound rate
+        </span>
+    </div>
+    <div>
+        <span class="help-block alert alert-danger" *ngIf="!isValidRateIncrement">
+            Please enter a valid rate increment
+        </span>
+    </div>
+    <div>
+        <button (click)="clearParameters()">Clear</button>
+        <button [disabled]="projects.length == 4" 
+                [ngClass]="{'btn-warning' : projects.length == 4 }"
+                (click)="addProject()">Add Project</button>
+    </div>
 </div>
 <div class="col-md-8"></div>
 <hr class="col-md-12" />
 
-<div *ngFor="let project of projects" [ngClass]="{
+<div *ngFor="let project of projects; let p = index" [ngClass]="{
      'col-md-3': projects.length == 4,
      'col-md-4': projects.length == 3,
      'col-md-6': projects.length == 2,
      'col-md-12': projects.length == 1
      }">
-    <h4>Project {{project.name}}</h4>
+    <h4>
+        <span *ngIf="!project.isEditing">
+            Project {{project.name}}
+        </span>
+        <input type="text" class="input-sm" *ngIf="project.isEditing" [(ngModel)]="project.name">
+        <a (click)="project.isEditing = true" *ngIf="!project.isEditing"> <i class="glyphicon glyphicon-edit"></i></a>
+        <a (click)="project.isEditing = false" *ngIf="project.isEditing"> <i class="glyphicon glyphicon-floppy-save"></i></a>
+        <a *ngIf="projects.length > 1" (click)="removeProject(p)"> <i class="glyphicon glyphicon-remove"></i></a>
+
+    </h4>
     <div *ngFor="let cashFlow of project.cashFlows; let i = index">
         <span>$ {{cashFlow}}</span><a (click)="removeCashFlow(project, i)"> <i class="glyphicon glyphicon-remove"></i></a>
     </div>
@@ -51,7 +83,14 @@
         <span *ngIf="project.cashFlows.length > 0">Add Cash Flow</span>
         <span *ngIf="project.cashFlows.length == 0">Add Initial Investment</span>
     </button>
-    <button (click)="computeNPV(project)">Compute</button>
+    <button (click)="computeNPV(project)" [disabled]="!hasValidParameters || !canProceedCompute(project)" 
+            [ngClass]="{'btn-danger' : !hasValidParameters || !canProceedCompute(project)}">Compute</button>
+    <div>
+        <span class="help-block alert alert-danger" *ngIf="!canProceedCompute(project)">
+            Please enter an initial investment and at least one cashflow
+        </span>
+    </div>
+
     <hr *ngIf="project.ratesnpv.length > 0" />
     <table class="col-md-6 table-striped table-responsive table-bordered"
            *ngIf="project.ratesnpv.length > 0">

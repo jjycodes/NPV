@@ -20,16 +20,31 @@ export class NPVComponent {
         scaleShowVerticalLines: false,
         responsive: true
     };
-    
+
     public barChartLabels: string[] = [];
     public barChartType: string = 'line';
     public barChartLegend: boolean = true;
 
     public barChartData: any[] = [];
 
-    // events
-    public chartClicked(e: any): void {
-        console.log(e);
+    get isValidLowerBoundRate(): boolean {
+        return this.parameters.lowerBoundDiscountRate >= 1 && this.parameters.lowerBoundDiscountRate <= 100;
+    }
+
+    get isValidUpperBoundRate(): boolean {
+        return this.parameters.upperBoundDiscountRate >= 1 && this.parameters.upperBoundDiscountRate <= 100;
+    }
+
+    get isValidRateIncrement(): boolean {
+        return this.parameters.discountRateIncrement > 0 && this.parameters.discountRateIncrement <= 1;
+    }
+
+    get hasValidParameters(): boolean {
+        return this.isValidLowerBoundRate && this.isValidUpperBoundRate && this.isValidRateIncrement;
+    }
+
+    public canProceedCompute(project : Project): boolean {
+        return project.cashFlows.length >= 2;
     }
 
     constructor(public http: Http, @Inject('BASE_URL') public baseUrl: string) {
@@ -45,13 +60,15 @@ export class NPVComponent {
                 name: 'X',
                 cashFlows: [35000, 10000, 27000, 19000],
                 newCashFlow: 0,
-                ratesnpv: []
+                ratesnpv: [],
+                isEditing: false
             },
             {
                 name: 'Y',
                 cashFlows: [35000, 27000, 27000],
                 newCashFlow: 0,
-                ratesnpv: []
+                ratesnpv: [],
+                isEditing: false
             }
         ];
 
@@ -70,12 +87,33 @@ export class NPVComponent {
         p.cashFlows.splice(index, 1);
     }
 
+    public removeProject(index: number) {
+        this.projects.splice(index, 1);
+    }
+
     public computeNPV(p: Project) {
         //validate
         if (this.parameters.upperBoundDiscountRate >= this.parameters.lowerBoundDiscountRate
             && this.parameters.discountRateIncrement > 0 && this.parameters.discountRateIncrement < 1
         )
             this.invokeNPVService(p);
+    }
+
+    public clearParameters() {
+        this.parameters.upperBoundDiscountRate = this.parameters.lowerBoundDiscountRate =
+            this.parameters.discountRateIncrement = 0;
+    }
+
+    public addProject() {
+        let newProject = <Project>{
+            name: 'new project',
+            isEditing: true,
+            cashFlows: [],
+            newCashFlow: 0,
+            ratesnpv: []
+        };
+
+        this.projects.push(newProject);
     }
 
     private invokeNPVService(p: Project): any {
@@ -106,10 +144,18 @@ export class NPVComponent {
                     return x.npv.toString();
                 });
 
-                this.barChartData.push({
-                    data: chartData,
-                    label: 'Project ' + p.name
+                let existingChartData = this.barChartData.find(b => {
+                    return b.label == 'Project ' + p.name;
                 });
+
+                if (existingChartData) {
+                    existingChartData.data = chartData;
+                } else {
+                    this.barChartData.push({
+                        data: chartData,
+                        label: 'Project ' + p.name
+                    });
+                }
 
             }, error => console.error(error));
     }
@@ -130,6 +176,7 @@ interface Project {
     cashFlows: number[];
     newCashFlow: number;
     ratesnpv: RatesNPV[];
+    isEditing: boolean;
 }
 
 interface NPVParameters {
